@@ -6,9 +6,9 @@ angular.module('noterious', [
   'firebase',
   'noterious.common'
 ])
-  .constant('ENDPOINT_URI', 'https://noterious.firebaseio.com/')
+  .constant('ENDPOINT_URI', 'https://noterery.firebaseio.com/')
   .config(function ($stateProvider, $urlRouterProvider) {
-    $urlRouterProvider.otherwise('/login');
+    $urlRouterProvider.otherwise('/boards');
 
     $stateProvider
       .state('login', {
@@ -17,15 +17,21 @@ angular.module('noterious', [
         controller: 'LoginCtrl',
         controllerAs: 'login'
       })
+      .state('boards', {
+        url: '/boards',
+        templateUrl: 'app/boards/boards.tmpl.html',
+        controller: 'BoardsCtrl',
+        controllerAs: 'boards',
+        // HINT: Add this to your boards route to force authentication
+        resolve: {
+        'currentUser': ['Auth', function (Auth) {
+        return Auth.$requireAuth();
+      }]
+    }
+
+      })
     ;
 
-    /* HINT: Add this to your boards route to force authentication
-     resolve: {
-       'currentUser': ['Auth', function (Auth) {
-        return Auth.$requireAuth();
-       }]
-     }
-     */
   })
   .run(function ($rootScope, $state) {
     $rootScope.$on('$stateChangeError', function (event, toState, toParams, fromState, fromParams, error) {
